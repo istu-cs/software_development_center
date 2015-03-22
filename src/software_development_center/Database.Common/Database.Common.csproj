@@ -86,6 +86,10 @@
     <Compile Include="Migrations\201503221546060_add base entities.Designer.cs">
       <DependentUpon>201503221546060_add base entities.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201503221756364_Add Project Author.cs" />
+    <Compile Include="Migrations\201503221756364_Add Project Author.Designer.cs">
+      <DependentUpon>201503221756364_Add Project Author.cs</DependentUpon>
+    </Compile>
     <Compile Include="SdcDbContext.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
@@ -113,6 +117,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201503221546060_add base entities.resx">
       <DependentUpon>201503221546060_add base entities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503221756364_Add Project Author.resx">
+      <DependentUpon>201503221756364_Add Project Author.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

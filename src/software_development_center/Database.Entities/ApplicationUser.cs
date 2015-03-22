@@ -11,6 +11,7 @@ namespace Database.Entities
 	{
 		public virtual ICollection<Comment> Comments { get; set; }
 		public virtual ICollection<Issue> Issues { get; set; }
+		public virtual ICollection<Project> Projects { get; set; }
 		public virtual ICollection<Issue> ExecutedIssues { get; set; }
 
 		public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Database.Common;
 using Microsoft.AspNet.Identity;
 using SDC.Web.Extensions;
@@ -45,6 +46,7 @@ namespace SDC.Web.Controllers
 			return View(comment.ToModel());
 		}
 
+		[Authorize]
 		public ActionResult Create(long? issueId)
 		{
 			if (issueId == null)
@@ -61,6 +63,7 @@ namespace SDC.Web.Controllers
 		}
 
 		[HttpPost]
+		[Authorize]
 		[ValidateAntiForgeryToken]
 		public ActionResult Create(CommentModel model)
 		{
@@ -79,6 +82,7 @@ namespace SDC.Web.Controllers
 			return RedirectToAction("Details", new {id = comment.Id});
 		}
 
+		[Authorize]
 		public ActionResult Edit(long? id)
 		{
 			if (id == null)
@@ -91,10 +95,18 @@ namespace SDC.Web.Controllers
 			{
 				return HttpNotFound();
 			}
+
+			var currentUserId = User.Identity.GetUserId();
+			if (comment.AuthorId != currentUserId)
+			{
+				return RedirectToAction("Index", new { issueId = comment.IssueId });
+			}
+
 			return View(comment.ToModel());
 		}
 
 		[HttpPost]
+		[Authorize]
 		[ValidateAntiForgeryToken]
 		public ActionResult Edit(CommentModel model)
 		{
@@ -104,12 +116,20 @@ namespace SDC.Web.Controllers
 			}
 
 			var comment = db.Comments.Find(model.Id);
+			var currentUserId = User.Identity.GetUserId();
+
+			if (comment.AuthorId == currentUserId)
+			{
+				return RedirectToAction("Index", new { issueId = comment.IssueId });
+			}
+
 			comment.Text = model.Text;
 			db.SaveChanges();
 
 			return RedirectToAction("Details", new {comment.Id});
 		}
 
+		[Authorize]
 		public ActionResult Delete(long? id)
 		{
 			if (id == null)
@@ -122,16 +142,28 @@ namespace SDC.Web.Controllers
 			{
 				return HttpNotFound();
 			}
+
+			var currentUserId = User.Identity.GetUserId();
+			if (comment.AuthorId != currentUserId)
+			{
+				return RedirectToAction("Index", new { issueId = comment.IssueId });
+			}
+
 			return View(comment.ToModel());
 		}
 
 		[HttpPost, ActionName("Delete")]
+		[Authorize]
 		[ValidateAntiForgeryToken]
 		public ActionResult DeleteConfirmed(long id)
 		{
 			var comment = db.Comments.Find(id);
-			db.Comments.Remove(comment);
-			db.SaveChanges();
+			var currentUserId = User.Identity.GetUserId();
+			if (comment.AuthorId == currentUserId)
+			{
+				db.Comments.Remove(comment);
+				db.SaveChanges();
+			}
 			return RedirectToAction("Index", new {issueId = comment.IssueId});
 		}
 

@@ -10,6 +10,9 @@ namespace Database.Entities
 	{
 		public string Name { get; set; }
 
+		public string AuthorId { get; set; }
+		public virtual ApplicationUser Author { get; set; }
+
 		public virtual ICollection<Issue> Issues { get; set; }
 	}
 }

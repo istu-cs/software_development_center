@@ -47,6 +47,7 @@ namespace SDC.Web.Controllers
 			return View(issue.ToModel());
 		}
 
+		[Authorize]
 		public ActionResult Create(long? projectId)
 		{
 			if (projectId == null)
@@ -66,6 +67,7 @@ namespace SDC.Web.Controllers
 		}
 
 		[HttpPost]
+		[Authorize]
 		[ValidateAntiForgeryToken]
 		public ActionResult Create(IssueModel model)
 		{
@@ -82,21 +84,31 @@ namespace SDC.Web.Controllers
 			return RedirectToAction("Details", new {id = issue.Id});
 		}
 
+		[Authorize]
 		public ActionResult Edit(long? id)
 		{
 			if (id == null)
 			{
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
+
 			var issue = db.Issues.Find(id);
 			if (issue == null)
 			{
 				return HttpNotFound();
 			}
+
+			var currentUserId = User.Identity.GetUserId();
+			if (issue.AuthorId != currentUserId)
+			{
+				return RedirectToAction("Index", new {projectId = issue.ProjectId});
+			}
+
 			return View(issue.ToModel());
 		}
 
 		[HttpPost]
+		[Authorize]
 		[ValidateAntiForgeryToken]
 		public ActionResult Edit(IssueModel model)
 		{
@@ -106,35 +118,53 @@ namespace SDC.Web.Controllers
 			}
 
 			var issue = db.Issues.Find(model.Id);
+			var currentUserId = User.Identity.GetUserId();
+			if (issue.AuthorId != currentUserId)
+			{
+				return RedirectToAction("Index", new { projectId = issue.ProjectId });
+			}
 			db.Entry(issue).CurrentValues.SetValues(model.ToDbModel());
 			db.SaveChanges();
 			return RedirectToAction("Details", new {id = issue.Id});
 		}
 
+		[Authorize]
 		public ActionResult Delete(long? id)
 		{
 			if (id == null)
 			{
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
+
 			var issue = db.Issues.Find(id);
 			if (issue == null)
 			{
 				return HttpNotFound();
 			}
+
+			var currentUserId = User.Identity.GetUserId();
+			if (issue.AuthorId != currentUserId)
+			{
+				return RedirectToAction("Index", new { projectId = issue.ProjectId });
+			}
+
 			return View(issue.ToModel());
 		}
 
 		[HttpPost, ActionName("Delete")]
+		[Authorize]
 		[ValidateAntiForgeryToken]
 		public ActionResult DeleteConfirmed(long id)
 		{
 			var issue = db.Issues.Find(id);
 			var projectId = issue.ProjectId;
-
-			db.Comments.RemoveRange(issue.Comments);
-			db.Issues.Remove(issue);
-			db.SaveChanges();
+			var currentUserId = User.Identity.GetUserId();
+			if (issue.AuthorId == currentUserId)
+			{
+				db.Comments.RemoveRange(issue.Comments);
+				db.Issues.Remove(issue);
+				db.SaveChanges();
+			}
 			return RedirectToAction("Index", new {projectId});
 		}
 

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Web.Mvc;
 using Database.Common;
+using Microsoft.AspNet.Identity;
 using SDC.Web.Extensions;
 using SDC.Web.Extensions.Database;
 using SDC.Web.Models;
@@ -33,12 +34,14 @@ namespace SDC.Web.Controllers
 			return View(project.ToModel());
 		}
 
+		[Authorize]
 		public ActionResult Create()
 		{
 			return View();
 		}
 
 		[HttpPost]
+		[Authorize]
 		public ActionResult Create(ProjectModel model)
 		{
 			if (!ModelState.IsValid)
@@ -47,11 +50,13 @@ namespace SDC.Web.Controllers
 			}
 
 			var project = model.ToDbModel();
+			project.AuthorId = User.Identity.GetUserId();
 			db.Projects.Add(project);
 			db.SaveChanges();
 			return RedirectToAction("Details", new {id = project.Id});
 		}
 
+		[Authorize]
 		public ActionResult Edit(long? id)
 		{
 			if (id == null)
@@ -64,10 +69,18 @@ namespace SDC.Web.Controllers
 			{
 				return HttpNotFound();
 			}
+
+			var currentUserId = User.Identity.GetUserId();
+			if (project.AuthorId != currentUserId)
+			{
+				return RedirectToAction("Index");
+			}
+
 			return View(project.ToModel());
 		}
 
 		[HttpPost]
+		[Authorize]
 		public ActionResult Edit(ProjectModel model)
 		{
 			if (!ModelState.IsValid)
@@ -76,11 +89,17 @@ namespace SDC.Web.Controllers
 			}
 
 			var project = db.Projects.Find(model.Id);
+			var currentUserId = User.Identity.GetUserId();
+			if (project.AuthorId != currentUserId)
+			{
+				return RedirectToAction("Index");
+			}
 			db.Entry(project).CurrentValues.SetValues(model.ToDbModel());
 			db.SaveChanges();
 			return RedirectToAction("Details", new { id = project.Id });
 		}
 
+		[Authorize]
 		public ActionResult Delete(long? id)
 		{
 			if (id == null)
@@ -93,18 +112,31 @@ namespace SDC.Web.Controllers
 			{
 				return HttpNotFound();
 			}
+
+			var currentUserId = User.Identity.GetUserId();
+			if (project.AuthorId != currentUserId)
+			{
+				return RedirectToAction("Index");
+			}
+
 			return View(project.ToModel());
 		}
 
 		[HttpPost, ActionName("Delete")]
+		[Authorize]
 		[ValidateAntiForgeryToken]
 		public ActionResult DeleteConfirmed(long id)
 		{
 			var project = db.Projects.Find(id);
-			db.Comments.RemoveRange(project.Issues.SelectMany(x => x.Comments));
-			db.Issues.RemoveRange(project.Issues);
-			db.Projects.Remove(project);
-			db.SaveChanges();
+			var currentUserId = User.Identity.GetUserId();
+			if (project.AuthorId == currentUserId)
+			{
+				db.Comments.RemoveRange(project.Issues.SelectMany(x => x.Comments));
+				db.Issues.RemoveRange(project.Issues);
+				db.Projects.Remove(project);
+				db.SaveChanges();
+			}
+
 			return RedirectToAction("Index");
 		}
 

@@ -55,6 +55,11 @@ namespace Database.Common
 				.WithMany(x => x.Issues)
 				.WillCascadeOnDelete(false);
 
+			modelBuilder.Entity<Project>()
+				.HasRequired(x => x.Author)
+				.WithMany(x => x.Projects)
+				.WillCascadeOnDelete(false);
+
 			base.OnModelCreating(modelBuilder);
 
 			#region Fix asp.net identity 2.0 tables under MySQL

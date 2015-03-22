@@ -14,7 +14,9 @@ namespace SDC.Web.Extensions.Database
 			return new ProjectModel
 			{
 				Id = project.Id,
-				Name = project.Name
+				Name = project.Name,
+				AuthorId = project.AuthorId,
+				AuthorName = project.Author.UserName
 			};
 		}
 	}

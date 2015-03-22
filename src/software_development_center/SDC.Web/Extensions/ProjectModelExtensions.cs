@@ -14,7 +14,8 @@ namespace SDC.Web.Extensions
 			return new Project
 			{
 				Id = model.Id,
-				Name = model.Name
+				Name = model.Name,
+				AuthorId = model.AuthorId
 			};
 		}
 	}
