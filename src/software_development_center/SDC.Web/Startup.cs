@@ -4,7 +4,7 @@ using Owin;
 [assembly: OwinStartupAttribute(typeof(SDC.Web.Startup))]
 namespace SDC.Web
 {
-    public partial class Startup
+    public class Startup : Database.Common.Startup
     {
         public void Configuration(IAppBuilder app)
         {

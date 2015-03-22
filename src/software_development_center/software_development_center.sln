@@ -5,6 +5,10 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDC.Web", "SDC.Web\SDC.Web.csproj", "{AB000080-2688-4EB7-AE4E-8D3D0439ACAB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Entities", "Database.Entities\Database.Entities.csproj", "{79F4ABCD-0054-432B-86D1-62F86FCD27DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Common", "Database.Common\Database.Common.csproj", "{91DD0E3E-1409-4FF0-881B-3D468DDBD59E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{AB000080-2688-4EB7-AE4E-8D3D0439ACAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB000080-2688-4EB7-AE4E-8D3D0439ACAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB000080-2688-4EB7-AE4E-8D3D0439ACAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79F4ABCD-0054-432B-86D1-62F86FCD27DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79F4ABCD-0054-432B-86D1-62F86FCD27DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79F4ABCD-0054-432B-86D1-62F86FCD27DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79F4ABCD-0054-432B-86D1-62F86FCD27DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91DD0E3E-1409-4FF0-881B-3D468DDBD59E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91DD0E3E-1409-4FF0-881B-3D468DDBD59E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91DD0E3E-1409-4FF0-881B-3D468DDBD59E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91DD0E3E-1409-4FF0-881B-3D468DDBD59E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

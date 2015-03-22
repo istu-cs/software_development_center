@@ -1,15 +1,14 @@
 ﻿using System;
+using Database.Entities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.Google;
 using Owin;
-using SDC.Web.Models;
 
-namespace SDC.Web
+namespace Database.Common
 {
-    public partial class Startup
+    public class Startup
     {
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)

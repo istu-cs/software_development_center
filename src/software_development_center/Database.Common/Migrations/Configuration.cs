@@ -1,8 +1,7 @@
 using System.Data.Entity.Migrations;
 using MySql.Data.Entity;
-using SDC.Web.Models;
 
-namespace SDC.Web.Migrations
+namespace Database.Common.Migrations
 {
 	internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
 	{
