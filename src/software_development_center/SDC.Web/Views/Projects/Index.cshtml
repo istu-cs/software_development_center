@@ -1,0 +1,48 @@
+﻿@using Extensions.Helpers
+@model IEnumerable<SDC.Web.Models.ProjectModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Projects</h2>
+
+<p>
+    @Html.ActionButton("Create New", "Create", null, htmlAttributes: new { @class = "btn btn-default" })
+</p>
+
+<table class="table">
+    
+    <tr>
+        <th>
+            @Html.DisplayName("Number")
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th></th>
+    </tr>
+
+    @{
+        var counter = 0;
+    }
+
+    @foreach (var project in Model)
+    {
+        counter ++;
+        
+        <tr>
+            <td>
+                @counter
+            </td>
+            <td>
+                @Html.ActionLink(project.Name, "Index", "Issues", new {projectId = project.Id}, null)
+            </td>
+            <td align="right">
+                @Html.ActionLink("Edit", "Edit", new { id = project.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = project.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = project.Id })
+            </td>
+        </tr>
+    }
+</table>

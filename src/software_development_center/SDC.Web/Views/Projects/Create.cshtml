@@ -1,0 +1,17 @@
+﻿@model SDC.Web.Models.ProjectModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create Project</h2>
+
+@using (Html.BeginForm())
+{
+    <div class="form-control">
+        @Html.LabelFor(x => x.Name)
+        @Html.TextBoxFor(x => x.Name)
+    </div>
+    
+    <input type="submit" value="Create"/>
+}

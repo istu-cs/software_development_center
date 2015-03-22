@@ -1,17 +1,19 @@
+using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using MySql.Data.Entity;
 
 namespace Database.Common.Migrations
 {
-	internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
+	internal sealed class Configuration : DbMigrationsConfiguration<SdcDbContext>
 	{
 		public Configuration()
 		{
 			AutomaticMigrationsEnabled = false;
+			TargetDatabase = new DbConnectionInfo(DbSettings.Deserialize().GetConnectionString(), "MySql.Data.MySqlClient");
 			SetSqlGenerator("MySql.Data.MySqlClient", new MySqlMigrationSqlGenerator());
 		}
 
-		protected override void Seed(ApplicationDbContext context)
+		protected override void Seed(SdcDbContext context)
 		{
 			//  This method will be called after migrating to the latest version.
 

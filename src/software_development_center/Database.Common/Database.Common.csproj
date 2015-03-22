@@ -82,7 +82,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationDbContext.cs" />
+    <Compile Include="Migrations\201503221546060_add base entities.cs" />
+    <Compile Include="Migrations\201503221546060_add base entities.Designer.cs">
+      <DependentUpon>201503221546060_add base entities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SdcDbContext.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="DbSettings.cs" />
@@ -106,6 +110,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201503221252012_Initial.resx">
       <DependentUpon>201503221252012_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503221546060_add base entities.resx">
+      <DependentUpon>201503221546060_add base entities.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

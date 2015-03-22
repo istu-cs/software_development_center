@@ -169,13 +169,25 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CommentsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IssuesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\ProjectsController.cs" />
+    <Compile Include="Extensions\CommentModelExtensions.cs" />
+    <Compile Include="Extensions\Database\CommentExtensions.cs" />
+    <Compile Include="Extensions\Database\IssueExtensions.cs" />
+    <Compile Include="Extensions\Database\ProjectExtensions.cs" />
+    <Compile Include="Extensions\IssueModelExtensions.cs" />
+    <Compile Include="Extensions\ProjectModelExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\CommentModels.cs" />
+    <Compile Include="Models\IssueModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\ProjectModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -235,6 +247,21 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Comments\Create.cshtml" />
+    <Content Include="Views\Comments\Delete.cshtml" />
+    <Content Include="Views\Comments\Details.cshtml" />
+    <Content Include="Views\Comments\Edit.cshtml" />
+    <Content Include="Views\Comments\Index.cshtml" />
+    <Content Include="Views\Issues\Create.cshtml" />
+    <Content Include="Views\Issues\Delete.cshtml" />
+    <Content Include="Views\Issues\Details.cshtml" />
+    <Content Include="Views\Issues\Edit.cshtml" />
+    <Content Include="Views\Issues\Index.cshtml" />
+    <Content Include="Views\Projects\Create.cshtml" />
+    <Content Include="Views\Projects\Delete.cshtml" />
+    <Content Include="Views\Projects\Details.cshtml" />
+    <Content Include="Views\Projects\Edit.cshtml" />
+    <Content Include="Views\Projects\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -254,6 +281,10 @@
     <ProjectReference Include="..\Database.Entities\Database.Entities.csproj">
       <Project>{79f4abcd-0054-432b-86d1-62f86fcd27dd}</Project>
       <Name>Database.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Extensions\Extensions.csproj">
+      <Project>{86ca6255-e6e3-4b25-b9b3-03995999108a}</Project>
+      <Name>Extensions</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

@@ -1,0 +1,60 @@
+﻿@using Extensions.Helpers
+@model IEnumerable<SDC.Web.Models.CommentModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div class="row" style="margin: 10px 0">
+    @Html.ActionButton("Create New", "Create", new { issueId = ViewBag.IssueId }, new { @class = "col-sm-2 btn btn-default" })
+    @Html.ActionButton("Back to Issues", "Index", "Issues", 
+        new { projectId = ViewBag.ProjectId }, 
+        new
+        {
+            style = "margin-left: 10px", 
+            @class = "col-sm-2 btn btn-default"
+        })
+</div>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("Number")
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Time)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AuthorName)
+        </th>
+        <th></th>
+    </tr>
+    
+    @{
+        var counter = 0;
+    }
+
+    @foreach (var item in Model)
+    {
+        counter ++;
+
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => counter)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Time)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AuthorName)
+            </td>
+            <td align="right">
+                @Html.ActionLink("Edit", "Edit", new {id = item.Id}) |
+                @Html.ActionLink("Details", "Details", new {id = item.Id}) |
+                @Html.ActionLink("Delete", "Delete", new {id = item.Id})
+            </td>
+        </tr>
+    }
+</table>
