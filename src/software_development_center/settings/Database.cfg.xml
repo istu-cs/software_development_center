@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DbSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Server>localhost</Server>
+  <Database>sdc_test</Database>
+  <UserId>sdc_test</UserId>
+  <Password>dmE9qBRbk9eAueCe</Password>
+</DbSettings>
