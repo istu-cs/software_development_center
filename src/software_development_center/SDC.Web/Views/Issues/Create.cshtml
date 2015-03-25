@@ -10,6 +10,7 @@
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(x => x.ProjectId)
+    @Html.HiddenFor(x => x.ParentIssueId)
     
     <div class="form-horizontal">
         <h4>Issue</h4>

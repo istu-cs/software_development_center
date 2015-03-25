@@ -1,4 +1,5 @@
-﻿@model SDC.Web.Models.IssueModel
+﻿@using Extensions.Helpers
+@model SDC.Web.Models.IssueModel
 
 @{
     ViewBag.Title = Model.Title + " - Details";
@@ -57,10 +58,28 @@
         <dd>
             @Html.DisplayFor(model => model.PerformerName)
         </dd>
+        
+        @if (Model.ParentIssueId != null)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.ParentIssueTitle)
+            </dt>
+
+            <dd>
+                @Html.ActionLink(Model.ParentIssueTitle, "Details", new {id = Model.ParentIssueId})
+            </dd>
+        }
 
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index", new {projectId = Model.ProjectId})
-</p>
+
+@if (Request.IsAuthenticated)
+{
+    <div class="row" style="margin: 10px 0">
+        @Html.ActionButton("Add child issue", "Create", new { projectId = Model.ProjectId, parentIssueId = Model.Id }, new { style = "margin-right: 10px", @class = "col-sm-2 btn btn-default" })
+        @Html.ActionButton("Edit", "Edit", new { id = Model.Id }, new { style = "margin-right: 10px", @class = "col-sm-2 btn btn-default" })
+        @Html.ActionButton("Back to List", "Index", new { projectId = Model.ProjectId }, new { style = "margin-right: 10px", @class = "col-sm-2 btn btn-default" })
+    </div>
+}
+
+@Html.Partial("IssuesTable", Model.ChildIssues)

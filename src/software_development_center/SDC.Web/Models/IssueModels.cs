@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using Database.Entities;
 using Database.Entities.Enum;
 
 namespace SDC.Web.Models
@@ -23,7 +24,10 @@ namespace SDC.Web.Models
 		[Required]
 		public long ProjectId { get; set; }
 		public string ProjectName { get; set; }
+		public long? ParentIssueId { get; set; }
+		public string ParentIssueTitle { get; set; }
 
 		public List<CommentModel> Comments { get; set; }
+		public List<IssueModel> ChildIssues { get; set; }
 	}
 }

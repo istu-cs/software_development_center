@@ -38,7 +38,7 @@ namespace Database.Common
 			modelBuilder.Entity<Comment>()
 				.HasRequired(x => x.Issue)
 				.WithMany(x => x.Comments)
-				.WillCascadeOnDelete(false);
+				.WillCascadeOnDelete(true);
 
 			modelBuilder.Entity<Issue>()
 				.HasRequired(x => x.Author)
@@ -53,7 +53,12 @@ namespace Database.Common
 			modelBuilder.Entity<Issue>()
 				.HasRequired(x => x.Project)
 				.WithMany(x => x.Issues)
-				.WillCascadeOnDelete(false);
+				.WillCascadeOnDelete(true);
+
+			modelBuilder.Entity<Issue>()
+				.HasOptional(x => x.ParentIssue)
+				.WithMany(x => x.ChildIssues)
+				.WillCascadeOnDelete(true);
 
 			modelBuilder.Entity<Project>()
 				.HasRequired(x => x.Author)

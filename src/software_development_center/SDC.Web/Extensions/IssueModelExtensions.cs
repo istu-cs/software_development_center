@@ -19,7 +19,8 @@ namespace SDC.Web.Extensions
 				Description = model.Description,
 				ProjectId = model.ProjectId,
 				AuthorId = model.AuthorId,
-				PerformerId = model.PerformerId
+				PerformerId = model.PerformerId,
+				ParentIssueId = model.ParentIssueId
 			};
 		}
 	}

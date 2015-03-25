@@ -131,8 +131,8 @@ namespace SDC.Web.Controllers
 			var currentUserId = User.Identity.GetUserId();
 			if (project.AuthorId == currentUserId)
 			{
-				db.Comments.RemoveRange(project.Issues.SelectMany(x => x.Comments));
-				db.Issues.RemoveRange(project.Issues);
+				//db.Comments.RemoveRange(project.Issues.SelectMany(x => x.Comments));
+				//db.Issues.RemoveRange(project.Issues);
 				db.Projects.Remove(project);
 				db.SaveChanges();
 			}

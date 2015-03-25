@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Database.Entities.Enum;
 
 namespace Database.Entities
@@ -19,6 +18,10 @@ namespace Database.Entities
 		public long ProjectId { get; set; }
 		public virtual Project Project { get; set; }
 
+		public long? ParentIssueId { get; set; }
+		public virtual Issue ParentIssue { get; set; }
+
 		public virtual ICollection<Comment> Comments { get; set; }
+		public virtual ICollection<Issue> ChildIssues { get; set; }
 	}
 }

@@ -82,22 +82,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Migrations\201503221546060_add base entities.cs" />
+    <Compile Include="Migrations\201503221252012_Initial.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Migrations\201503221252012_Initial.Designer.cs">
+      <DependentUpon>201503221252012_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503221546060_add base entities.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Migrations\201503221546060_add base entities.Designer.cs">
       <DependentUpon>201503221546060_add base entities.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201503221756364_Add Project Author.cs" />
+    <Compile Include="Migrations\201503221756364_Add Project Author.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Migrations\201503221756364_Add Project Author.Designer.cs">
       <DependentUpon>201503221756364_Add Project Author.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503251010267_Add Child Issues.cs" />
+    <Compile Include="Migrations\201503251010267_Add Child Issues.Designer.cs">
+      <DependentUpon>201503251010267_Add Child Issues.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503251015264_Enable Cascade Delete.cs" />
+    <Compile Include="Migrations\201503251015264_Enable Cascade Delete.Designer.cs">
+      <DependentUpon>201503251015264_Enable Cascade Delete.cs</DependentUpon>
     </Compile>
     <Compile Include="SdcDbContext.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="DbSettings.cs" />
-    <Compile Include="Migrations\201503221252012_Initial.cs" />
-    <Compile Include="Migrations\201503221252012_Initial.Designer.cs">
-      <DependentUpon>201503221252012_Initial.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -112,6 +126,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\settings\Database.cfg.xml">
+      <Link>Database.cfg.xml</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Migrations\201503221252012_Initial.resx">
       <DependentUpon>201503221252012_Initial.cs</DependentUpon>
     </EmbeddedResource>
@@ -121,12 +141,12 @@
     <EmbeddedResource Include="Migrations\201503221756364_Add Project Author.resx">
       <DependentUpon>201503221756364_Add Project Author.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\settings\Database.cfg.xml">
-      <Link>Database.cfg.xml</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="Migrations\201503251010267_Add Child Issues.resx">
+      <DependentUpon>201503251010267_Add Child Issues.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503251015264_Enable Cascade Delete.resx">
+      <DependentUpon>201503251015264_Enable Cascade Delete.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

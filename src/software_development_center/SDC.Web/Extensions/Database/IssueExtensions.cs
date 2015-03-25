@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using Database.Entities;
-using Database.Entities.Enum;
 using SDC.Web.Models;
 
 namespace SDC.Web.Extensions.Database
@@ -17,6 +13,10 @@ namespace SDC.Web.Extensions.Database
 				.OrderByDescending(x => x.Time)
 				.ToList();
 
+			var childIssues = issue.ChildIssues.ToList()
+				.Select(x => x.ToModel())
+				.ToList();
+
 			return new IssueModel
 			{
 				Id = issue.Id,
@@ -26,10 +26,13 @@ namespace SDC.Web.Extensions.Database
 				AuthorId = issue.AuthorId,
 				AuthorName = issue.Author.UserName,
 				PerformerId = issue.PerformerId,
-				PerformerName = issue.PerformerId == null ? null : issue.Performer.UserName,
+				PerformerName = issue.PerformerId == null ? "" : issue.Performer.UserName,
 				ProjectId = issue.ProjectId,
 				ProjectName = issue.Project.Name,
-				Comments = comments
+				ParentIssueId = issue.ParentIssueId,
+				ParentIssueTitle = issue.ParentIssueId == null ? "" : issue.ParentIssue.Title,
+				Comments = comments,
+				ChildIssues = childIssues
 			};
 		}
 	}

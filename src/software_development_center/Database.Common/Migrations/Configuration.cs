@@ -8,6 +8,7 @@ namespace Database.Common.Migrations
 	{
 		public Configuration()
 		{
+			CodeGenerator = new MySqlMigrationCodeGenerator();
 			AutomaticMigrationsEnabled = false;
 			TargetDatabase = new DbConnectionInfo(DbSettings.Deserialize().GetConnectionString(), "MySql.Data.MySqlClient");
 			SetSqlGenerator("MySql.Data.MySqlClient", new MySqlMigrationSqlGenerator());

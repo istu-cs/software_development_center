@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Database.Common;
+using Database.Entities;
 using Microsoft.AspNet.Identity;
 using SDC.Web.Extensions;
 using SDC.Web.Extensions.Database;
@@ -24,11 +26,12 @@ namespace SDC.Web.Controllers
 				return HttpNotFound();
 			}
 
-			ViewBag.ProjectId = projectId;
-			var issues = db.Issues.Where(x => x.ProjectId == projectId).ToList()
+			var dbIssues = db.Issues.Where(x => x.ProjectId == projectId).ToList();
+			var issues = dbIssues
 				.Select(x => x.ToModel())
 				.ToList();
 
+			ViewBag.ProjectId = projectId;
 			return View(issues);
 		}
 
@@ -48,7 +51,7 @@ namespace SDC.Web.Controllers
 		}
 
 		[Authorize]
-		public ActionResult Create(long? projectId)
+		public ActionResult Create(long? projectId, long? parentIssueId)
 		{
 			if (projectId == null)
 			{
@@ -61,7 +64,8 @@ namespace SDC.Web.Controllers
 
 			var model = new IssueModel
 			{
-				ProjectId = projectId.Value
+				ProjectId = projectId.Value,
+				ParentIssueId = parentIssueId
 			};
 			return View(model);
 		}
@@ -74,6 +78,12 @@ namespace SDC.Web.Controllers
 			if (!ModelState.IsValid)
 			{
 				return View(model);
+			}
+
+			var parentIssueExists = !model.ParentIssueId.HasValue || db.Issues.Any(x => x.Id == model.ParentIssueId);
+			if (!parentIssueExists)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
 
 			var issue = model.ToDbModel();
@@ -161,7 +171,7 @@ namespace SDC.Web.Controllers
 			var currentUserId = User.Identity.GetUserId();
 			if (issue.AuthorId == currentUserId)
 			{
-				db.Comments.RemoveRange(issue.Comments);
+				//db.Comments.RemoveRange(issue.Comments);
 				db.Issues.Remove(issue);
 				db.SaveChanges();
 			}
