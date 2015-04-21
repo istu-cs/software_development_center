@@ -1,0 +1,19 @@
+﻿@using Extensions.Helpers
+@model SDC.Web.Models.IndexTeamViewModel
+
+@{
+    ViewBag.Title = Model.Name;
+}
+
+<h2>@Model.Name</h2>
+
+<h3>Performers</h3>
+
+@Html.Partial("~/Views/Users/UsersTable.cshtml", Model.Performers)
+
+@if (Request.IsAuthenticated)
+{
+    <div class="row" style="margin: 10px 0">
+        @Html.ActionButton("Edit", "Edit", new { id = Model.Id }, new { style = "margin-right: 10px", @class = "col-sm-2 btn btn-default" })
+    </div>
+}

@@ -1,5 +1,5 @@
 ﻿@using SDC.Web.Models
-@model IEnumerable<IssueModel>
+@model IEnumerable<IssueViewModel>
            
 <table class="table">
     <tr>
@@ -8,9 +8,6 @@
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Title)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Status)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.AuthorName)
@@ -35,9 +32,6 @@
             </td>
             <td>
                 @Html.ActionLink(item.Title, "Index", "Comments", new { issueId = item.Id }, null)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.AuthorName)

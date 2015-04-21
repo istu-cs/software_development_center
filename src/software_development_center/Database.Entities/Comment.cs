@@ -8,7 +8,7 @@ namespace Database.Entities
 		public DateTime Time { get; set; }
 
 		public string AuthorId { get; set; }
-		public virtual ApplicationUser Author { get; set; }
+		public virtual User Author { get; set; }
 
 		public long IssueId { get; set; }
 		public virtual Issue Issue { get; set; }

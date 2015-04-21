@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 
 namespace Database.Entities.Enum
 {
-	public enum IssueStatus
+	public enum TeamType
 	{
-		Unoccupied,
-		Assigned,
-		InProcess,
-		PartiallyDone,
-		Done,
-		ToVerify
+		Fictive = 0,
+		OneIssue = 1,
+		Global = 2
 	}
 }

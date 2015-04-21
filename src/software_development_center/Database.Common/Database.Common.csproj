@@ -108,6 +108,10 @@
     <Compile Include="Migrations\201503251015264_Enable Cascade Delete.Designer.cs">
       <DependentUpon>201503251015264_Enable Cascade Delete.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201504231150469_Add Teams.cs" />
+    <Compile Include="Migrations\201504231150469_Add Teams.Designer.cs">
+      <DependentUpon>201504231150469_Add Teams.cs</DependentUpon>
+    </Compile>
     <Compile Include="SdcDbContext.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
@@ -146,6 +150,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201503251015264_Enable Cascade Delete.resx">
       <DependentUpon>201503251015264_Enable Cascade Delete.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504231150469_Add Teams.resx">
+      <DependentUpon>201504231150469_Add Teams.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

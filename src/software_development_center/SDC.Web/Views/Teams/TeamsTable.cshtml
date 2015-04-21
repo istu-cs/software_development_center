@@ -1,0 +1,42 @@
+﻿@using SDC.Web.Models
+@model IEnumerable<TeamListItemViewModel>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("Number")
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th></th>
+    </tr>
+
+    @{
+        var counter = 0;
+    }
+
+    @foreach (var item in Model)
+    {
+        counter++;
+
+        <tr>
+            <td>
+                @counter
+            </td>
+            <td>
+                @Html.ActionLink(item.Name, "Index", "Teams", new { id = item.Id }, null)
+            </td>
+            <td align="right">
+                @Html.ActionLink("Details", "Index", "Teams", new { id = item.Id }, null)
+                @if (Request.IsAuthenticated)
+                {
+                    @:|
+                    @Html.ActionLink("Edit", "Edit", "Teams", new { id = item.Id }, null)
+                    @:|
+                    @Html.ActionLink("Delete", "Delete", "Teams", new { id = item.Id }, null)
+                }
+            </td>
+        </tr>
+    }
+</table>

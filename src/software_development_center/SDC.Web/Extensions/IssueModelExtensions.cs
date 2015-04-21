@@ -9,17 +9,15 @@ namespace SDC.Web.Extensions
 {
 	public static class IssueModelExtensions
 	{
-		public static Issue ToDbModel(this IssueModel model)
+		public static Issue ToDbModel(this IssueViewModel model)
 		{
 			return new Issue
 			{
 				Id = model.Id,
 				Title = model.Title,
-				Status = model.Status,
 				Description = model.Description,
 				ProjectId = model.ProjectId,
 				AuthorId = model.AuthorId,
-				PerformerId = model.PerformerId,
 				ParentIssueId = model.ParentIssueId
 			};
 		}

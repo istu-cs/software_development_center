@@ -4,6 +4,7 @@ using System.Net;
 using System.Web.Mvc;
 using Database.Common;
 using Database.Entities;
+using Database.Entities.Enum;
 using Microsoft.AspNet.Identity;
 using SDC.Web.Extensions;
 using SDC.Web.Extensions.Database;
@@ -62,7 +63,7 @@ namespace SDC.Web.Controllers
 				return HttpNotFound();
 			}
 
-			var model = new IssueModel
+			var model = new IssueViewModel
 			{
 				ProjectId = projectId.Value,
 				ParentIssueId = parentIssueId
@@ -73,7 +74,7 @@ namespace SDC.Web.Controllers
 		[HttpPost]
 		[Authorize]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create(IssueModel model)
+		public ActionResult Create(IssueViewModel model)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -120,7 +121,7 @@ namespace SDC.Web.Controllers
 		[HttpPost]
 		[Authorize]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(IssueModel model)
+		public ActionResult Edit(IssueViewModel model)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -176,6 +177,42 @@ namespace SDC.Web.Controllers
 				db.SaveChanges();
 			}
 			return RedirectToAction("Index", new {projectId});
+		}
+
+		[HttpPost]
+		[Authorize]
+		public ActionResult Assign(long? id)
+		{
+			if (id == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+
+			var issue = db.Issues.Find(id);
+			if (issue == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+
+			var user = db.Users.Find(User.Identity.GetUserId());
+			var team = user.Teams.Single(x => x.Type == TeamType.Fictive);
+
+			var statusExists = db.IssueStatuses.Any(x => x.IssueId == issue.Id && x.TeamId == team.Id);
+			if (statusExists)
+			{
+				return RedirectToAction("Details", new {id = issue.Id});
+			}
+
+			var status = new IssueStatus
+			{
+				State = IssueState.Assigned,
+				Issue = issue,
+				Team = team
+			};
+			issue.IssueStatuses.Add(status);
+			db.SaveChanges();
+
+			return RedirectToAction("Details", new {id = issue.Id});
 		}
 
 		protected override void Dispose(bool disposing)

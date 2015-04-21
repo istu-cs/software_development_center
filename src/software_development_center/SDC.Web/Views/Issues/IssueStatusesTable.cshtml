@@ -1,0 +1,37 @@
+﻿@using SDC.Web.Models
+@model IEnumerable<IssueStatusListItemViewModel>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("Number")
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TeamName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.State)
+        </th>
+    </tr>
+
+    @{
+        var counter = 0;
+    }
+
+    @foreach (var item in Model)
+    {
+        counter++;
+
+        <tr>
+            <td>
+                @counter
+            </td>
+            <td>
+                @Html.ActionLink(item.TeamName, "Index", "Teams", new { id = item.TeamId }, null)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
+        </tr>
+    }
+</table>

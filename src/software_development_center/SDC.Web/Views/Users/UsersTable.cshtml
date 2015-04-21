@@ -1,0 +1,31 @@
+﻿@using SDC.Web.Models
+@model IEnumerable<UserListItemViewModel>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("Number")
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UserName)
+        </th>
+    </tr>
+
+    @{
+        var counter = 0;
+    }
+
+    @foreach (var item in Model)
+    {
+        counter++;
+
+        <tr>
+            <td>
+                @counter
+            </td>
+            <td>
+                @Html.ActionLink(item.UserName, "Index", "Users", new { id = item.Id }, null)
+            </td>
+        </tr>
+    }
+</table>

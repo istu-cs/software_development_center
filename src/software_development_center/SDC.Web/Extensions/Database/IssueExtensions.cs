@@ -6,7 +6,7 @@ namespace SDC.Web.Extensions.Database
 {
 	public static class IssueExtensions
 	{
-		public static IssueModel ToModel(this Issue issue)
+		public static IssueViewModel ToModel(this Issue issue)
 		{
 			var comments = issue.Comments.ToList()
 				.Select(x => x.ToModel())
@@ -17,22 +17,29 @@ namespace SDC.Web.Extensions.Database
 				.Select(x => x.ToModel())
 				.ToList();
 
-			return new IssueModel
+			var issueStatuses = issue.IssueStatuses
+				.Select(x => new IssueStatusListItemViewModel
+				{
+					State = x.State,
+					TeamId = x.TeamId,
+					TeamName = x.Team.Name
+				})
+				.ToList();
+
+			return new IssueViewModel
 			{
 				Id = issue.Id,
 				Title = issue.Title,
-				Status = issue.Status,
 				Description = issue.Description,
 				AuthorId = issue.AuthorId,
 				AuthorName = issue.Author.UserName,
-				PerformerId = issue.PerformerId,
-				PerformerName = issue.PerformerId == null ? "" : issue.Performer.UserName,
 				ProjectId = issue.ProjectId,
 				ProjectName = issue.Project.Name,
 				ParentIssueId = issue.ParentIssueId,
 				ParentIssueTitle = issue.ParentIssueId == null ? "" : issue.ParentIssue.Title,
 				Comments = comments,
-				ChildIssues = childIssues
+				ChildIssues = childIssues,
+				IssueStatuses = issueStatuses
 			};
 		}
 	}

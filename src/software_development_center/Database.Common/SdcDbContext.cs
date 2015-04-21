@@ -6,7 +6,7 @@ using MySql.Data.Entity;
 namespace Database.Common
 {
 	[DbConfigurationType(typeof(MySqlEFConfiguration))]
-	public class SdcDbContext : IdentityDbContext<ApplicationUser>
+	public class SdcDbContext : IdentityDbContext<User>
 	{
 		public SdcDbContext()
 			: base("DefaultConnection", throwIfV1Schema: false)
@@ -20,7 +20,9 @@ namespace Database.Common
 
 		public DbSet<Comment> Comments { get; set; }
 		public DbSet<Issue> Issues { get; set; }
+		public DbSet<IssueStatus> IssueStatuses { get; set; }
 		public DbSet<Project> Projects { get; set; }
+		public DbSet<Team> Teams { get; set; }
 
 		public static SdcDbContext Create()
 		{
@@ -46,24 +48,33 @@ namespace Database.Common
 				.WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<Issue>()
-				.HasOptional(x => x.Performer)
-				.WithMany(x => x.ExecutedIssues)
-				.WillCascadeOnDelete(false);
-
-			modelBuilder.Entity<Issue>()
 				.HasRequired(x => x.Project)
 				.WithMany(x => x.Issues)
-				.WillCascadeOnDelete(true);
+				.WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<Issue>()
 				.HasOptional(x => x.ParentIssue)
 				.WithMany(x => x.ChildIssues)
-				.WillCascadeOnDelete(true);
-
+				.WillCascadeOnDelete(false);
+			
 			modelBuilder.Entity<Project>()
 				.HasRequired(x => x.Author)
 				.WithMany(x => x.Projects)
 				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<IssueStatus>()
+				.HasRequired(x => x.Team)
+				.WithMany(x => x.IssueStatuses)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<IssueStatus>()
+				.HasRequired(x => x.Issue)
+				.WithMany(x => x.IssueStatuses)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<Team>()
+				.HasMany(x => x.Performers)
+				.WithMany(x => x.Teams);
 
 			base.OnModelCreating(modelBuilder);
 
@@ -80,7 +91,7 @@ namespace Database.Common
 
 			// We have to declare the table name here, otherwise IdentityUser
 			// will be created
-			modelBuilder.Entity<ApplicationUser>()
+			modelBuilder.Entity<User>()
 				.ToTable("AspNetUsers")
 				.Property(c => c.UserName)
 				.HasMaxLength(128)
