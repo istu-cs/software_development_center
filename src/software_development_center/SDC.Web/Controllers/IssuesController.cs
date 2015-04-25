@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -131,7 +132,7 @@ namespace SDC.Web.Controllers
 			var currentUserId = User.Identity.GetUserId();
 			if (issue.AuthorId != currentUserId)
 			{
-				return RedirectToAction("Index", new { projectId = issue.ProjectId });
+				return RedirectToAction("Index", new {projectId = issue.ProjectId});
 			}
 			db.Entry(issue).CurrentValues.SetValues(model.ToDbModel());
 			db.SaveChanges();
@@ -155,7 +156,7 @@ namespace SDC.Web.Controllers
 			var currentUserId = User.Identity.GetUserId();
 			if (issue.AuthorId != currentUserId)
 			{
-				return RedirectToAction("Index", new { projectId = issue.ProjectId });
+				return RedirectToAction("Index", new {projectId = issue.ProjectId});
 			}
 
 			return View(issue.ToModel());
@@ -195,21 +196,12 @@ namespace SDC.Web.Controllers
 
 			var teamId = User.GetCurrentTeamId();
 			var statusExists = db.IssueStatuses.Any(x => x.IssueId == issue.Id && x.TeamId == teamId);
-			if (statusExists)
+			if (!statusExists)
 			{
-				return RedirectToAction("Details", new {id = issue.Id});
+				var user = db.Users.Find(User.Identity.GetUserId());
+				var team = user.Teams.Single(x => x.Id == teamId);
+				AssignTeam(team, issue);
 			}
-
-			var user = db.Users.Find(User.Identity.GetUserId());
-			var team = user.Teams.Single(x => x.Id == teamId);
-			var status = new IssueStatus
-			{
-				State = IssueState.Assigned,
-				Issue = issue,
-				Team = team
-			};
-			issue.IssueStatuses.Add(status);
-			db.SaveChanges();
 
 			return RedirectToAction("Details", new {id = issue.Id});
 		}
@@ -233,11 +225,11 @@ namespace SDC.Web.Controllers
 			var status = issue.IssueStatuses.SingleOrDefault(x => x.TeamId == teamId);
 			if (status != null)
 			{
-				db.Entry(status).State = EntityState.Deleted;
-				db.SaveChanges();
+				var team = db.Teams.Find(teamId);
+				UnassignTeam(team, issue);
 			}
 
-			return RedirectToAction("Details", new { id = issue.Id });
+			return RedirectToAction("Details", new {id = issue.Id});
 		}
 
 		protected override void Dispose(bool disposing)
@@ -248,5 +240,92 @@ namespace SDC.Web.Controllers
 			}
 			base.Dispose(disposing);
 		}
+
+		#region Helpers
+
+		private void AssignTeam(Team team, Issue issue)
+		{
+			if (team == null || issue == null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			if (issue.IssueStatuses.Any(x => x.TeamId == team.Id))
+			{
+				return;
+			}
+
+			foreach (var childIssue in issue.ChildIssues)
+			{
+				AssignTeam(team, childIssue);
+			}
+
+			var status = new IssueStatus
+			{
+				State = IssueState.Assigned,
+				Issue = issue,
+				Team = team
+			};
+			issue.IssueStatuses.Add(status);
+			db.SaveChanges();
+		}
+
+		private void UnassignTeam(Team team, Issue issue)
+		{
+			if (team == null || issue == null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			UnassignTeamDown(team, issue);
+			if (issue.ParentIssue != null)
+			{
+				UnassignTeamUp(team, issue.ParentIssue);
+			}
+		}
+
+		private void UnassignTeamDown(Team team, Issue issue)
+		{
+			if (team == null || issue == null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			var status = issue.IssueStatuses.SingleOrDefault(x => x.TeamId == team.Id);
+			if (status == null)
+			{
+				return;
+			}
+
+			db.Entry(status).State = EntityState.Deleted;
+			db.SaveChanges();
+
+			foreach (var childIssue in issue.ChildIssues)
+			{
+				UnassignTeam(team, childIssue);
+			}
+		}
+
+		private void UnassignTeamUp(Team team, Issue issue)
+		{
+			if (team == null || issue == null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			var status = issue.IssueStatuses.SingleOrDefault(x => x.TeamId == team.Id);
+			while (status != null && issue != null)
+			{
+				db.Entry(status).State = EntityState.Deleted;
+				issue = issue.ParentIssue;
+				if (issue != null)
+				{
+					status = issue.IssueStatuses.SingleOrDefault(x => x.TeamId == team.Id);
+				}
+			}
+			db.SaveChanges();
+		}
+
+		#endregion
 	}
 }
