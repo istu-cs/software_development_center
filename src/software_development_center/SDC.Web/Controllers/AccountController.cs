@@ -75,13 +75,14 @@ namespace SDC.Web.Controllers
 					var user = db.Users.Single(x => x.Email == model.Email);
 					var team = user.Teams.Single(x => x.Type == TeamType.Fictive);
 					MembershipTeam.SetCurrentTeam(team.Name);
-					return RedirectToLocal(returnUrl);
+					return RedirectToUrl(returnUrl);
 				case SignInStatus.LockedOut:
 					return View("Lockout");
 				case SignInStatus.RequiresVerification:
 					return RedirectToAction("SendCode", new {ReturnUrl = returnUrl, RememberMe = model.RememberMe});
 				case SignInStatus.Failure:
 				default:
+					ViewBag.ReturnUrl = returnUrl;
 					ModelState.AddModelError("", "Invalid login attempt.");
 					return View(model);
 			}
@@ -127,7 +128,7 @@ namespace SDC.Web.Controllers
 					var user = db.Users.Single(x => x.UserName == userName);
 					var team = user.Teams.Single(x => x.Type == TeamType.Fictive);
 					MembershipTeam.SetCurrentTeam(team.Name);
-					return RedirectToLocal(model.ReturnUrl);
+					return RedirectToUrl(model.ReturnUrl);
 				case SignInStatus.LockedOut:
 					return View("Lockout");
 				case SignInStatus.Failure:
@@ -346,7 +347,7 @@ namespace SDC.Web.Controllers
 			switch (result)
 			{
 				case SignInStatus.Success:
-					return RedirectToLocal(returnUrl);
+					return RedirectToUrl(returnUrl);
 				case SignInStatus.LockedOut:
 					return View("Lockout");
 				case SignInStatus.RequiresVerification:
@@ -397,7 +398,7 @@ namespace SDC.Web.Controllers
 					if (result.Succeeded)
 					{
 						await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-						return RedirectToLocal(returnUrl);
+						return RedirectToUrl(returnUrl);
 					}
 				}
 				AddErrors(result);
@@ -464,13 +465,13 @@ namespace SDC.Web.Controllers
 			}
 		}
 
-		private ActionResult RedirectToLocal(string returnUrl)
+		private ActionResult RedirectToUrl(string returnUrl)
 		{
-			if (Url.IsLocalUrl(returnUrl))
+			if (string.IsNullOrEmpty(returnUrl))
 			{
-				return Redirect(returnUrl);
+				return RedirectToAction("Index", "Home");
 			}
-			return RedirectToAction("Index", "Home");
+			return Redirect(returnUrl);
 		}
 
 		internal class ChallengeResult : HttpUnauthorizedResult

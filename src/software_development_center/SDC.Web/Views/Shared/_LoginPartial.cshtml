@@ -7,7 +7,7 @@
 
         <ul class="nav navbar-nav navbar-right">
             <li>
-                @Html.ActionLink("Team: " + User.GetCurrentTeamName(), "ChangeCurrentTeam", "Teams")
+                @Html.ActionLink("Team: " + User.GetCurrentTeamName(), "ChangeCurrentTeam", "Teams", routeValues: new { returnUrl = Request.Url.AbsoluteUri}, htmlAttributes:null)
             </li>
             <li>
                 @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
@@ -20,6 +20,6 @@ else
 {
     <ul class="nav navbar-nav navbar-right">
         <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: new { returnUrl = Request.Url.AbsoluteUri }, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
 }

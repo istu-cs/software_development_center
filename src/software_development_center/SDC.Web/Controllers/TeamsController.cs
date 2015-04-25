@@ -224,7 +224,7 @@ namespace SDC.Web.Controllers
 		}
 
 		[Authorize]
-		public ActionResult ChangeCurrentTeam()
+		public ActionResult ChangeCurrentTeam(string returnUrl)
 		{
 			var user = db.Users.Find(User.Identity.GetUserId());
 			var teams = user.Teams.Where(x => x.Type != TeamType.OneIssue);
@@ -234,12 +234,14 @@ namespace SDC.Web.Controllers
 				TeamId = User.GetCurrentTeamId(),
 				Teams = new SelectList(teams, "Id", "Name")
 			};
+
+			ViewBag.ReturnUrl = returnUrl;
 			return View(model);
 		}
 
 		[HttpPost]
 		[Authorize]
-		public ActionResult ChangeCurrentTeam(ChangeCurrentTeamViewModel model)
+		public ActionResult ChangeCurrentTeam(ChangeCurrentTeamViewModel model, string returnUrl)
 		{
 			if (model == null)
 			{
@@ -259,7 +261,11 @@ namespace SDC.Web.Controllers
 			}
 
 			MembershipTeam.SetCurrentTeam(team.Name);
-			return RedirectToAction("Index", "Home");
+			if (string.IsNullOrEmpty(returnUrl))
+			{
+				return RedirectToAction("Index", "Home");
+			}
+			return Redirect(returnUrl);
 		}
 	}
 }

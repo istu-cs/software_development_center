@@ -6,7 +6,7 @@
 
 <h2>ChangeCurrentTeam</h2>
 
-@using (Html.BeginForm())
+@using (Html.BeginForm(routeValues: new {returnUrl = ViewBag.ReturnUrl}))
 {
     @Html.AntiForgeryToken()
 
