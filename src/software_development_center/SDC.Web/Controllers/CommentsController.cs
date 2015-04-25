@@ -11,10 +11,8 @@ using SDC.Web.Models;
 
 namespace SDC.Web.Controllers
 {
-	public class CommentsController : Controller
+	public class CommentsController : BaseController
 	{
-		private SdcDbContext db = SdcDbContext.Create();
-
 		public ActionResult Index(long? issueId)
 		{
 			if (issueId == null)

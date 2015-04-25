@@ -9,10 +9,8 @@ using SDC.Web.Models;
 
 namespace SDC.Web.Controllers
 {
-	public class ProjectsController : Controller
+	public class ProjectsController : BaseController
 	{
-		private SdcDbContext db = SdcDbContext.Create();
-		
 		public ActionResult Index()
 		{
 			var projects = db.Projects.ToList().Select(x => x.ToModel());

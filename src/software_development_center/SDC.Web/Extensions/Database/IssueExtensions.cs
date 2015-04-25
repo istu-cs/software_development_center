@@ -1,6 +1,10 @@
 ﻿using System.Linq;
+using System.Net.Http;
+using System.Web;
 using Database.Entities;
+using Database.Entities.Enum;
 using SDC.Web.Models;
+using SDC.Web.Types;
 
 namespace SDC.Web.Extensions.Database
 {
@@ -26,6 +30,15 @@ namespace SDC.Web.Extensions.Database
 				})
 				.ToList();
 
+			var user = (BasePrincipal) HttpContext.Current.User;
+			var currentTeamIssueState = IssueState.Unoccupied;
+			if (user.Identity.IsAuthenticated)
+			{
+				var currentTeamId = user.GetCurrentTeamId();
+				var status = issueStatuses.SingleOrDefault(x => x.TeamId == currentTeamId);
+				currentTeamIssueState = status == null ? IssueState.Unoccupied : status.State;
+			}
+
 			return new IssueViewModel
 			{
 				Id = issue.Id,
@@ -39,7 +52,8 @@ namespace SDC.Web.Extensions.Database
 				ParentIssueTitle = issue.ParentIssueId == null ? "" : issue.ParentIssue.Title,
 				Comments = comments,
 				ChildIssues = childIssues,
-				IssueStatuses = issueStatuses
+				IssueStatuses = issueStatuses,
+				CurrentTeamIssueState = currentTeamIssueState
 			};
 		}
 	}

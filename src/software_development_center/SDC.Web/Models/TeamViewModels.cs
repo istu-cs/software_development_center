@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace SDC.Web.Models
 {
@@ -53,5 +54,11 @@ namespace SDC.Web.Models
 		public long TeamId { get; set; }
 		[Required]
 		public string PerformerId { get; set; }
+	}
+
+	public class ChangeCurrentTeamViewModel
+	{
+		public long TeamId { get; set; }
+		public IEnumerable<SelectListItem> Teams { get; set; }
 	}
 }

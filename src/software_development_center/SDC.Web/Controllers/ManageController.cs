@@ -13,7 +13,7 @@ using SDC.Web.Models;
 namespace SDC.Web.Controllers
 {
 	[Authorize]
-	public class ManageController : Controller
+	public class ManageController : BaseController
 	{
 		private ApplicationSignInManager _signInManager;
 		private ApplicationUserManager _userManager;

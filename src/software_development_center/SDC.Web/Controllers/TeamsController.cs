@@ -9,13 +9,12 @@ using Database.Entities;
 using Database.Entities.Enum;
 using Microsoft.AspNet.Identity;
 using SDC.Web.Models;
+using SDC.Web.Types;
 
 namespace SDC.Web.Controllers
 {
-	public class TeamsController : Controller
+	public class TeamsController : BaseController
 	{
-		private SdcDbContext db = SdcDbContext.Create();
-
 		// GET: Teams
 		public ActionResult Index(long? id)
 		{
@@ -222,6 +221,45 @@ namespace SDC.Web.Controllers
 				db.SaveChanges();
 			}
 			return RedirectToAction("Edit", new { id });
+		}
+
+		[Authorize]
+		public ActionResult ChangeCurrentTeam()
+		{
+			var user = db.Users.Find(User.Identity.GetUserId());
+			var teams = user.Teams.Where(x => x.Type != TeamType.OneIssue);
+
+			var model = new ChangeCurrentTeamViewModel
+			{
+				TeamId = User.GetCurrentTeamId(),
+				Teams = new SelectList(teams, "Id", "Name")
+			};
+			return View(model);
+		}
+
+		[HttpPost]
+		[Authorize]
+		public ActionResult ChangeCurrentTeam(ChangeCurrentTeamViewModel model)
+		{
+			if (model == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+
+			if (!ModelState.IsValid)
+			{
+				return View(model);
+			}
+
+			var user = db.Users.Find(User.Identity.GetUserId());
+			var team = user.Teams.SingleOrDefault(x => x.Id == model.TeamId);
+			if (team == null)
+			{
+				return View(model);
+			}
+
+			MembershipTeam.SetCurrentTeam(team.Name);
+			return RedirectToAction("Index", "Home");
 		}
 	}
 }

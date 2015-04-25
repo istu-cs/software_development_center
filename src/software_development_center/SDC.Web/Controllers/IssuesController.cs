@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -12,10 +13,8 @@ using SDC.Web.Models;
 
 namespace SDC.Web.Controllers
 {
-	public class IssuesController : Controller
+	public class IssuesController : BaseController
 	{
-		private SdcDbContext db = SdcDbContext.Create();
-		
 		public ActionResult Index(long? projectId)
 		{
 			if (projectId == null)
@@ -194,15 +193,15 @@ namespace SDC.Web.Controllers
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
 
-			var user = db.Users.Find(User.Identity.GetUserId());
-			var team = user.Teams.Single(x => x.Type == TeamType.Fictive);
-
-			var statusExists = db.IssueStatuses.Any(x => x.IssueId == issue.Id && x.TeamId == team.Id);
+			var teamId = User.GetCurrentTeamId();
+			var statusExists = db.IssueStatuses.Any(x => x.IssueId == issue.Id && x.TeamId == teamId);
 			if (statusExists)
 			{
 				return RedirectToAction("Details", new {id = issue.Id});
 			}
 
+			var user = db.Users.Find(User.Identity.GetUserId());
+			var team = user.Teams.Single(x => x.Id == teamId);
 			var status = new IssueStatus
 			{
 				State = IssueState.Assigned,
@@ -213,6 +212,32 @@ namespace SDC.Web.Controllers
 			db.SaveChanges();
 
 			return RedirectToAction("Details", new {id = issue.Id});
+		}
+
+		[HttpPost]
+		[Authorize]
+		public ActionResult Unassign(long? id)
+		{
+			if (id == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+
+			var issue = db.Issues.Find(id);
+			if (issue == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+
+			var teamId = User.GetCurrentTeamId();
+			var status = issue.IssueStatuses.SingleOrDefault(x => x.TeamId == teamId);
+			if (status != null)
+			{
+				db.Entry(status).State = EntityState.Deleted;
+				db.SaveChanges();
+			}
+
+			return RedirectToAction("Details", new { id = issue.Id });
 		}
 
 		protected override void Dispose(bool disposing)

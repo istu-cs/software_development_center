@@ -8,10 +8,8 @@ using Microsoft.AspNet.Identity;
 
 namespace SDC.Web.Controllers
 {
-	public class UsersController : Controller
+	public class UsersController : BaseController
 	{
-		private SdcDbContext db = SdcDbContext.Create();
-
 		// GET: Users
 		public ActionResult Index(string id)
 		{

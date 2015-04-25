@@ -23,7 +23,7 @@ namespace Database.Common
 		public DbSet<IssueStatus> IssueStatuses { get; set; }
 		public DbSet<Project> Projects { get; set; }
 		public DbSet<Team> Teams { get; set; }
-
+		
 		public static SdcDbContext Create()
 		{
 			var dbSettings = DbSettings.Deserialize();

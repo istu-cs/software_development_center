@@ -18,13 +18,12 @@ namespace SDC.Web.Models
 		public string Description { get; set; }
 		public string AuthorId { get; set; }
 		public string AuthorName { get; set; }
-		public string PerformerId { get; set; }
-		public string PerformerName { get; set; }
 		[Required]
 		public long ProjectId { get; set; }
 		public string ProjectName { get; set; }
 		public long? ParentIssueId { get; set; }
 		public string ParentIssueTitle { get; set; }
+		public IssueState CurrentTeamIssueState { get; set; }
 
 		public IList<CommentModel> Comments { get; set; }
 		public IList<IssueViewModel> ChildIssues { get; set; }

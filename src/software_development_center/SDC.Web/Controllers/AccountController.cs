@@ -12,11 +12,12 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using SDC.Web.Models;
+using SDC.Web.Types;
 
 namespace SDC.Web.Controllers
 {
 	[Authorize]
-	public class AccountController : Controller
+	public class AccountController : BaseController
 	{
 		private ApplicationSignInManager _signInManager;
 		private ApplicationUserManager _userManager;
@@ -71,6 +72,9 @@ namespace SDC.Web.Controllers
 			switch (result)
 			{
 				case SignInStatus.Success:
+					var user = db.Users.Single(x => x.Email == model.Email);
+					var team = user.Teams.Single(x => x.Type == TeamType.Fictive);
+					MembershipTeam.SetCurrentTeam(team.Name);
 					return RedirectToLocal(returnUrl);
 				case SignInStatus.LockedOut:
 					return View("Lockout");
@@ -119,6 +123,10 @@ namespace SDC.Web.Controllers
 			switch (result)
 			{
 				case SignInStatus.Success:
+					var userName = User.Identity.GetUserName();
+					var user = db.Users.Single(x => x.UserName == userName);
+					var team = user.Teams.Single(x => x.Type == TeamType.Fictive);
+					MembershipTeam.SetCurrentTeam(team.Name);
 					return RedirectToLocal(model.ReturnUrl);
 				case SignInStatus.LockedOut:
 					return View("Lockout");
@@ -158,6 +166,7 @@ namespace SDC.Web.Controllers
 				var result = await UserManager.CreateAsync(user, model.Password);
 				if (result.Succeeded)
 				{
+					MembershipTeam.SetCurrentTeam(fictiveTeam.Name);
 					await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
 					// For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
@@ -404,6 +413,7 @@ namespace SDC.Web.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult LogOff()
 		{
+			MembershipTeam.ClearCurrentTeam();
 			AuthenticationManager.SignOut();
 			return RedirectToAction("Index", "Home");
 		}
