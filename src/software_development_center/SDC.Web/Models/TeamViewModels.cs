@@ -15,12 +15,6 @@ namespace SDC.Web.Models
 		public IList<IssueListItemViewModel> Issues;
 	}
 
-	public class IssueListItemViewModel
-	{
-		public long Id { get; set; }
-		public string Title { get; set; }
-	}
-
 	public class TeamListItemViewModel
 	{
 		public long Id { get; set; }

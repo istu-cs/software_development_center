@@ -20,7 +20,7 @@ namespace Database.Common
 
 		public DbSet<Comment> Comments { get; set; }
 		public DbSet<Issue> Issues { get; set; }
-		public DbSet<IssueStatus> IssueStatuses { get; set; }
+		public DbSet<TeamProgress> TeamsProgress { get; set; }
 		public DbSet<Project> Projects { get; set; }
 		public DbSet<Team> Teams { get; set; }
 		
@@ -62,15 +62,15 @@ namespace Database.Common
 				.WithMany(x => x.Projects)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<IssueStatus>()
+			modelBuilder.Entity<TeamProgress>()
 				.HasRequired(x => x.Team)
-				.WithMany(x => x.IssueStatuses)
+				.WithMany(x => x.TeamsProgress)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<IssueStatus>()
+			modelBuilder.Entity<TeamProgress>()
 				.HasRequired(x => x.Issue)
-				.WithMany(x => x.IssueStatuses)
-				.WillCascadeOnDelete(false);
+				.WithMany(x => x.TeamsProgress)
+				.WillCascadeOnDelete(true);
 
 			modelBuilder.Entity<Team>()
 				.HasMany(x => x.Performers)

@@ -1,5 +1,5 @@
 ﻿@using Extensions.Helpers
-@model IEnumerable<SDC.Web.Models.IssueViewModel>
+@model SDC.Web.Models.IndexIssueViewModel
 
 @{
     ViewBag.Title = "Index";
@@ -10,9 +10,9 @@
 <div class="row" style="margin: 10px 0">
     @if (Request.IsAuthenticated)
     {
-        @Html.ActionButton("Create New", "Create", new {projectId = ViewBag.ProjectId}, new {style = "margin-right: 10px", @class = "col-sm-2 btn btn-default"})
+        @Html.ActionButton("Create New", "Create", new {projectId = Model.ProjectId}, new {style = "margin-right: 10px", @class = "col-sm-2 btn btn-default"})
     }
     @Html.ActionButton("Back to Projects", "Index", "Projects", null, new { @class = "col-sm-2 btn btn-default" })
 </div>
 
-@Html.Partial("IssuesTable", Model)
+@Html.Partial("IssuesTablePartial", Model.Issues)

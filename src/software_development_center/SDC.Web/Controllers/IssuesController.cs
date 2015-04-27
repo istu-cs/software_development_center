@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using Database.Common;
 using Database.Entities;
 using Database.Entities.Enum;
 using Microsoft.AspNet.Identity;
-using SDC.Web.Extensions;
-using SDC.Web.Extensions.Database;
 using SDC.Web.Models;
 
 namespace SDC.Web.Controllers
@@ -22,18 +19,27 @@ namespace SDC.Web.Controllers
 			{
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
-			if (!db.Projects.Any(x => x.Id == projectId))
+
+			if (db.Projects.All(x => x.Id != projectId))
 			{
 				return HttpNotFound();
 			}
 
-			var dbIssues = db.Issues.Where(x => x.ProjectId == projectId).ToList();
-			var issues = dbIssues
-				.Select(x => x.ToModel())
-				.ToList();
+			var issues = db.Issues
+				.Where(x => x.ProjectId == projectId)
+				.Select(x => new IssueListItemViewModel
+				{
+					Id = x.Id,
+					Title = x.Title
+				});
 
-			ViewBag.ProjectId = projectId;
-			return View(issues);
+			var model = new IndexIssueViewModel
+			{
+				ProjectId = projectId.Value,
+				Issues = issues
+			};
+
+			return View(model);
 		}
 
 		public ActionResult Details(long? id)
@@ -48,7 +54,66 @@ namespace SDC.Web.Controllers
 			{
 				return HttpNotFound();
 			}
-			return View(issue.ToModel());
+
+			var childIssues = issue.ChildIssues
+				.Select(x => new IssueListItemViewModel
+				{
+					Id = x.Id,
+					Title = x.Title
+				});
+
+			var teamsProgress = issue.TeamsProgress
+				.Select(x => new TeamProgressListItemViewModel
+				{
+					Status = x.Status,
+					TeamId = x.TeamId,
+					TeamName = x.Team.Name
+				});
+
+			var isAuthenticated = User.Identity.IsAuthenticated;
+			var teamId = User.GetCurrentTeamId();
+			var progress = issue.TeamsProgress.SingleOrDefault(x => x.TeamId == teamId);
+
+			var currentTeamCanAssign = false;
+			var currentTeamCanStartProgress = false;
+			var currentTeamCanSendToReview = false;
+			var currentTeamCanUnassign = false;
+			var currentTeamProgressStatus = progress == null ? TeamProgressStatus.Unoccupied : progress.Status;
+			var currentUserCanEdit = issue.AuthorId == User.Identity.GetUserId();
+
+			if (isAuthenticated && issue.Status == IssueStatus.Opened)
+			{
+				currentTeamCanAssign = currentTeamProgressStatus == TeamProgressStatus.Unoccupied;
+				currentTeamCanUnassign = currentTeamProgressStatus != TeamProgressStatus.Unoccupied;
+				currentTeamCanStartProgress = currentTeamProgressStatus == TeamProgressStatus.Assigned;
+				currentTeamCanSendToReview = 
+					currentTeamProgressStatus == TeamProgressStatus.InProgress || 
+					currentTeamProgressStatus == TeamProgressStatus.PartiallyDone;
+			}
+			
+			var model = new DetailsIssueViewModel()
+			{
+				Id = issue.Id,
+				AuthorId = issue.AuthorId,
+				AuthorName = issue.Author.UserName,
+				Description = issue.Description,
+				ParentIssueId = issue.ParentIssueId,
+				ParentIssueTitle = issue.ParentIssue == null ? string.Empty : issue.ParentIssue.Title,
+				ProjectId = issue.ProjectId,
+				ProjectName = issue.Project.Name,
+				Status = issue.Status,
+				Title = issue.Title,
+				ChildIssues = childIssues,
+				TeamsProgress = teamsProgress,
+				CurrentTeamCanAssign = currentTeamCanAssign,
+				CurrentTeamCanUnassign = currentTeamCanUnassign,
+				CurrentTeamCanSendToReview = currentTeamCanSendToReview,
+				CurrentTeamCanStartProgress = currentTeamCanStartProgress,
+				CurrentTeamProgressStatus = currentTeamProgressStatus,
+				CurrentUserCanEdit = currentUserCanEdit
+			};
+
+			return View(model);
 		}
 
 		[Authorize]
@@ -63,7 +128,7 @@ namespace SDC.Web.Controllers
 				return HttpNotFound();
 			}
 
-			var model = new IssueViewModel
+			var model = new CreateIssueViewModel
 			{
 				ProjectId = projectId.Value,
 				ParentIssueId = parentIssueId
@@ -74,7 +139,7 @@ namespace SDC.Web.Controllers
 		[HttpPost]
 		[Authorize]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create(IssueViewModel model)
+		public ActionResult Create(CreateIssueViewModel model)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -87,11 +152,49 @@ namespace SDC.Web.Controllers
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
 
-			var issue = model.ToDbModel();
-			issue.AuthorId = User.Identity.GetUserId();
+			var issue = new Issue
+			{
+				AuthorId = User.Identity.GetUserId(),
+				Description = model.Description,
+				ParentIssueId = model.ParentIssueId,
+				ProjectId = model.ProjectId,
+				Status = IssueStatus.Opened,
+				Title = model.Title
+			};
 
 			db.Issues.Add(issue);
 			db.SaveChanges();
+
+			if (issue.ParentIssueId.HasValue)
+			{
+				issue.ParentIssue = db.Issues.Find(issue.ParentIssueId);
+				issue.ChildIssues = new Collection<Issue>();
+				issue.TeamsProgress = new Collection<TeamProgress>();
+
+				issue.ParentIssue.Status = IssueStatus.Waiting;
+				db.SaveChanges();
+
+				var teamId = User.GetCurrentTeamId();
+				var parentIssue = issue.ParentIssue;
+				var progress = parentIssue.TeamsProgress.SingleOrDefault(x => x.TeamId == teamId);
+				if (progress == null || progress.Status == TeamProgressStatus.Unoccupied)
+				{
+					return RedirectToAction("Details", new { id = issue.Id });
+				}
+
+				if (progress.Status == TeamProgressStatus.Done)
+				{
+					progress.Status = TeamProgressStatus.PartiallyDone;
+				}
+				else if (progress.Status == TeamProgressStatus.ToVerify)
+				{
+					progress.Status = TeamProgressStatus.InProgress;
+				}
+
+				var team = db.Teams.Find(teamId);
+				AssignTeam(team, issue);
+			}
+
 			return RedirectToAction("Details", new {id = issue.Id});
 		}
 
@@ -115,13 +218,21 @@ namespace SDC.Web.Controllers
 				return RedirectToAction("Index", new {projectId = issue.ProjectId});
 			}
 
-			return View(issue.ToModel());
+			var model = new EditIssueViewModel
+			{
+				Id = issue.Id,
+				Title = issue.Title,
+				Description = issue.Description,
+				ProjectId = issue.ProjectId
+			};
+
+			return View(model);
 		}
 
 		[HttpPost]
 		[Authorize]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(IssueViewModel model)
+		public ActionResult Edit(EditIssueViewModel model)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -134,8 +245,11 @@ namespace SDC.Web.Controllers
 			{
 				return RedirectToAction("Index", new {projectId = issue.ProjectId});
 			}
-			db.Entry(issue).CurrentValues.SetValues(model.ToDbModel());
+
+			issue.Title = model.Title;
+			issue.Description = model.Description;
 			db.SaveChanges();
+
 			return RedirectToAction("Details", new {id = issue.Id});
 		}
 
@@ -159,7 +273,16 @@ namespace SDC.Web.Controllers
 				return RedirectToAction("Index", new {projectId = issue.ProjectId});
 			}
 
-			return View(issue.ToModel());
+			var model = new DeleteIssueViewModel
+			{
+				Id = issue.Id,
+				Title = issue.Title,
+				Description = issue.Description,
+				AuthorName = issue.Author.UserName,
+				ProjectName = issue.Project.Name
+			};
+
+			return View(model);
 		}
 
 		[HttpPost, ActionName("Delete")]
@@ -172,7 +295,6 @@ namespace SDC.Web.Controllers
 			var currentUserId = User.Identity.GetUserId();
 			if (issue.AuthorId == currentUserId)
 			{
-				//db.Comments.RemoveRange(issue.Comments);
 				db.Issues.Remove(issue);
 				db.SaveChanges();
 			}
@@ -195,7 +317,7 @@ namespace SDC.Web.Controllers
 			}
 
 			var teamId = User.GetCurrentTeamId();
-			var statusExists = db.IssueStatuses.Any(x => x.IssueId == issue.Id && x.TeamId == teamId);
+			var statusExists = db.TeamsProgress.Any(x => x.IssueId == issue.Id && x.TeamId == teamId);
 			if (!statusExists)
 			{
 				var user = db.Users.Find(User.Identity.GetUserId());
@@ -222,11 +344,63 @@ namespace SDC.Web.Controllers
 			}
 
 			var teamId = User.GetCurrentTeamId();
-			var status = issue.IssueStatuses.SingleOrDefault(x => x.TeamId == teamId);
+			var status = issue.TeamsProgress.SingleOrDefault(x => x.TeamId == teamId);
 			if (status != null)
 			{
 				var team = db.Teams.Find(teamId);
 				UnassignTeam(team, issue);
+			}
+
+			return RedirectToAction("Details", new {id = issue.Id});
+		}
+
+		[HttpPost]
+		[Authorize]
+		public ActionResult StartProgress(long? id)
+		{
+			if (id == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+
+			var issue = db.Issues.Find(id);
+			if (issue == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+
+			var teamId = User.GetCurrentTeamId();
+			var progress = issue.TeamsProgress.SingleOrDefault(x => x.TeamId == teamId);
+			if (progress != null)
+			{
+				progress.Status = TeamProgressStatus.InProgress;
+				db.SaveChanges();
+			}
+
+			return RedirectToAction("Details", new {id = issue.Id});
+		}
+
+		[HttpPost]
+		[Authorize]
+		public ActionResult SendToReview(long? id)
+		{
+			if (id == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+
+			var issue = db.Issues.Find(id);
+			if (issue == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+
+			var teamId = User.GetCurrentTeamId();
+			var progress = issue.TeamsProgress.SingleOrDefault(x => x.TeamId == teamId);
+			if (progress != null)
+			{
+				progress.Status = TeamProgressStatus.ToVerify;
+				db.SaveChanges();
 			}
 
 			return RedirectToAction("Details", new {id = issue.Id});
@@ -250,7 +424,7 @@ namespace SDC.Web.Controllers
 				throw new ArgumentNullException();
 			}
 
-			if (issue.IssueStatuses.Any(x => x.TeamId == team.Id))
+			if (issue.TeamsProgress.Any(x => x.TeamId == team.Id))
 			{
 				return;
 			}
@@ -260,13 +434,13 @@ namespace SDC.Web.Controllers
 				AssignTeam(team, childIssue);
 			}
 
-			var status = new IssueStatus
+			var status = new TeamProgress
 			{
-				State = IssueState.Assigned,
+				Status = TeamProgressStatus.Assigned,
 				Issue = issue,
 				Team = team
 			};
-			issue.IssueStatuses.Add(status);
+			issue.TeamsProgress.Add(status);
 			db.SaveChanges();
 		}
 
@@ -291,7 +465,7 @@ namespace SDC.Web.Controllers
 				throw new ArgumentNullException();
 			}
 
-			var status = issue.IssueStatuses.SingleOrDefault(x => x.TeamId == team.Id);
+			var status = issue.TeamsProgress.SingleOrDefault(x => x.TeamId == team.Id);
 			if (status == null)
 			{
 				return;
@@ -313,14 +487,14 @@ namespace SDC.Web.Controllers
 				throw new ArgumentNullException();
 			}
 
-			var status = issue.IssueStatuses.SingleOrDefault(x => x.TeamId == team.Id);
+			var status = issue.TeamsProgress.SingleOrDefault(x => x.TeamId == team.Id);
 			while (status != null && issue != null)
 			{
 				db.Entry(status).State = EntityState.Deleted;
 				issue = issue.ParentIssue;
 				if (issue != null)
 				{
-					status = issue.IssueStatuses.SingleOrDefault(x => x.TeamId == team.Id);
+					status = issue.TeamsProgress.SingleOrDefault(x => x.TeamId == team.Id);
 				}
 			}
 			db.SaveChanges();

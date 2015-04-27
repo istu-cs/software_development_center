@@ -1,4 +1,4 @@
-﻿@model SDC.Web.Models.IssueViewModel
+﻿@model SDC.Web.Models.EditIssueViewModel
 
 @{
     ViewBag.Title = Model.Title + " - Edit";
@@ -9,8 +9,6 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    @Html.HiddenFor(x => x.ProjectId)
-    @Html.HiddenFor(x => x.AuthorId)
     
     <div class="form-horizontal">
         <h4>Issue</h4>

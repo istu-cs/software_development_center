@@ -17,6 +17,6 @@ namespace Database.Entities
 		public TeamType Type { get; set; }
 
 		public virtual ICollection<User> Performers { get; set; }
-		public virtual ICollection<IssueStatus> IssueStatuses { get; set; }
+		public virtual ICollection<TeamProgress> TeamsProgress { get; set; }
 	}
 }

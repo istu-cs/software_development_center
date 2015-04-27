@@ -179,18 +179,16 @@
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Extensions\CommentModelExtensions.cs" />
     <Compile Include="Extensions\Database\CommentExtensions.cs" />
-    <Compile Include="Extensions\Database\IssueExtensions.cs" />
     <Compile Include="Extensions\Database\ProjectExtensions.cs" />
-    <Compile Include="Extensions\IssueModelExtensions.cs" />
     <Compile Include="Extensions\ProjectModelExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\CommentModels.cs" />
-    <Compile Include="Models\IssueModels.cs" />
+    <Compile Include="Models\CommentViewModels.cs" />
+    <Compile Include="Models\IssueViewModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\ProjectModels.cs" />
+    <Compile Include="Models\ProjectViewModels.cs" />
     <Compile Include="Models\TeamViewModels.cs" />
     <Compile Include="Models\UserViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -271,7 +269,7 @@
     <Content Include="Views\Projects\Details.cshtml" />
     <Content Include="Views\Projects\Edit.cshtml" />
     <Content Include="Views\Projects\Index.cshtml" />
-    <Content Include="Views\Issues\IssuesTable.cshtml" />
+    <Content Include="Views\Issues\IssuesTablePartial.cshtml" />
     <Content Include="Views\Teams\TeamsTable.cshtml" />
     <Content Include="Views\Teams\Index.cshtml" />
     <Content Include="Views\Users\UsersTable.cshtml" />
@@ -279,7 +277,7 @@
     <Content Include="Views\Teams\Edit.cshtml" />
     <Content Include="Views\Teams\AddPerformer.cshtml" />
     <Content Include="Views\Teams\DeletePerformer.cshtml" />
-    <Content Include="Views\Issues\IssueStatusesTable.cshtml" />
+    <Content Include="Views\Issues\TeamsProgressTablePartial.cshtml" />
     <Content Include="Views\Teams\ChangeCurrentTeam.cshtml" />
   </ItemGroup>
   <ItemGroup>

@@ -8,9 +8,9 @@ using Database.Entities.Enum;
 
 namespace Database.Entities
 {
-	public class IssueStatus : IdentityBase
+	public class TeamProgress : IdentityBase
 	{
-		public IssueState State { get; set; }
+		public TeamProgressStatus Status { get; set; }
 
 		[Index("IX_TeamAndIssue", 1, IsUnique = true)]
 		public long TeamId { get; set; }

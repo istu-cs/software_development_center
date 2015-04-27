@@ -1,6 +1,5 @@
-﻿@using Database.Entities.Enum
-@using Extensions.Helpers
-@model SDC.Web.Models.IssueViewModel
+﻿@using Extensions.Helpers
+@model SDC.Web.Models.DetailsIssueViewModel
 
 @{
     ViewBag.Title = Model.Title + " - Details";
@@ -29,19 +28,19 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-
-        <dt>
             @Html.DisplayNameFor(model => model.AuthorName)
         </dt>
 
         <dd>
             @Html.DisplayFor(model => model.AuthorName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Status)
         </dd>
         
         @if (Model.ParentIssueId != null)
@@ -55,39 +54,65 @@
             </dd>
         }
 
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
     </dl>
 </div>
 
 <div class="row" style="margin: 10px 0">
-    @if (Request.IsAuthenticated)
+    @if (Model.CurrentTeamCanAssign)
     {
-        if (Model.CurrentTeamIssueState == IssueState.Unoccupied)
+        using (Html.BeginForm("Assign", "Issues"))
         {
-            using (Html.BeginForm("Assign", "Issues"))
-            {
-                @Html.Hidden("id", Model.Id)
-                <input type="submit" value="Assign" class="col-sm-2 btn btn-default" style="margin-right: 10px" />
-            }
+            @Html.Hidden("id", Model.Id)
+            <input type="submit" value="Assign" class="col-sm-2 btn btn-default" style="margin-right: 10px" />
         }
-        else
+    }
+    @if (Model.CurrentTeamCanStartProgress)
+    {
+        using (Html.BeginForm("StartProgress", "Issues"))
         {
-            using (Html.BeginForm("Unassign", "Issues"))
-            {
-                @Html.Hidden("id", Model.Id)
-                <input type="submit" value="Unassign" class="col-sm-2 btn btn-default" style="margin-right: 10px" />
-            }
+            @Html.Hidden("id", Model.Id)
+            <input type="submit" value="Start Progress" class="col-sm-2 btn btn-default" style="margin-right: 10px" />
         }
+    }
+    @if (Model.CurrentTeamCanSendToReview)
+    {
+        using (Html.BeginForm("SendToReview", "Issues"))
+        {
+            @Html.Hidden("id", Model.Id)
+            <input type="submit" value="Send To Review" class="col-sm-2 btn btn-default" style="margin-right: 10px" />
+        }
+    }
+    @if (Model.CurrentTeamCanUnassign)
+    {
+        using (Html.BeginForm("Unassign", "Issues"))
+        {
+            @Html.Hidden("id", Model.Id)
+            <input type="submit" value="Unassign" class="col-sm-2 btn btn-default" style="margin-right: 10px" />
+        }
+    }
+</div>
 
-        @Html.ActionButton("Add child issue", "Create", new {projectId = Model.ProjectId, parentIssueId = Model.Id}, new {style = "margin-right: 10px", @class = "col-sm-2 btn btn-default"})
-        @Html.ActionButton("Edit", "Edit", new {id = Model.Id}, new {style = "margin-right: 10px", @class = "col-sm-2 btn btn-default"})
+<div class="row" style="margin: 10px 0">
+    @if (Model.CurrentUserCanEdit)
+    {
+        @Html.ActionButton("Add child issue", "Create", new { projectId = Model.ProjectId, parentIssueId = Model.Id }, new { style = "margin-right: 10px", @class = "col-sm-2 btn btn-default" })
+        @Html.ActionButton("Edit", "Edit", new { id = Model.Id }, new { style = "margin-right: 10px", @class = "col-sm-2 btn btn-default" })
     }
     @Html.ActionButton("Back to List", "Index", new { projectId = Model.ProjectId }, new { style = "margin-right: 10px", @class = "col-sm-2 btn btn-default" })
 </div>
 
 <h4>Child Issues</h4>
 
-@Html.Partial("IssuesTable", Model.ChildIssues)
+@Html.Partial("IssuesTablePartial", Model.ChildIssues)
 
 <h4>Performers</h4>
 
-@Html.Partial("IssueStatusesTable", Model.IssueStatuses)
+@Html.Partial("TeamsProgressTablePartial", Model.TeamsProgress)

@@ -43,7 +43,7 @@ namespace SDC.Web.Controllers
 				})
 				.ToList();
 
-			var issues = team.IssueStatuses
+			var issues = team.TeamsProgress
 				.Select(x => x.Issue)
 				.Select(x => new IssueListItemViewModel()
 				{

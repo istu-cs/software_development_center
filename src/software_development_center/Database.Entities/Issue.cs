@@ -7,6 +7,7 @@ namespace Database.Entities
 	{
 		public string Title { get; set; }
 		public string Description { get; set; }
+		public IssueStatus Status { get; set; }
 
 		public string AuthorId { get; set; }
 		public virtual User Author { get; set; }
@@ -19,6 +20,6 @@ namespace Database.Entities
 
 		public virtual ICollection<Comment> Comments { get; set; }
 		public virtual ICollection<Issue> ChildIssues { get; set; }
-		public virtual ICollection<IssueStatus> IssueStatuses { get; set; }
+		public virtual ICollection<TeamProgress> TeamsProgress { get; set; }
 	}
 }
