@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enum\IssueStatus.cs" />
+    <Compile Include="Enum\IssueType.cs" />
     <Compile Include="Enum\TeamType.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Comment.cs" />

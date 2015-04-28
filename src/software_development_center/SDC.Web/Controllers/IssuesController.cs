@@ -105,6 +105,7 @@ namespace SDC.Web.Controllers
 				Title = issue.Title,
 				ChildIssues = childIssues,
 				TeamsProgress = teamsProgress,
+				Type = issue.Type,
 				CurrentTeamCanAssign = currentTeamCanAssign,
 				CurrentTeamCanUnassign = currentTeamCanUnassign,
 				CurrentTeamCanSendToReview = currentTeamCanSendToReview,
@@ -128,10 +129,13 @@ namespace SDC.Web.Controllers
 				return HttpNotFound();
 			}
 
+			var types = Enum.GetNames(typeof(IssueType));
+
 			var model = new CreateIssueViewModel
 			{
 				ProjectId = projectId.Value,
-				ParentIssueId = parentIssueId
+				ParentIssueId = parentIssueId,
+				Types = new SelectList(types)
 			};
 			return View(model);
 		}
@@ -143,7 +147,15 @@ namespace SDC.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
+				var types = Enum.GetNames(typeof(IssueType));
+				model.Types = new SelectList(types);
 				return View(model);
+			}
+
+			IssueType type;
+			if (!Enum.TryParse(model.Type, out type))
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
 
 			var parentIssueExists = !model.ParentIssueId.HasValue || db.Issues.Any(x => x.Id == model.ParentIssueId);
@@ -159,7 +171,8 @@ namespace SDC.Web.Controllers
 				ParentIssueId = model.ParentIssueId,
 				ProjectId = model.ProjectId,
 				Status = IssueStatus.Opened,
-				Title = model.Title
+				Title = model.Title,
+				Type = type
 			};
 
 			db.Issues.Add(issue);
@@ -218,12 +231,16 @@ namespace SDC.Web.Controllers
 				return RedirectToAction("Index", new {projectId = issue.ProjectId});
 			}
 
+			var types = Enum.GetNames(typeof(IssueType));
+
 			var model = new EditIssueViewModel
 			{
 				Id = issue.Id,
 				Title = issue.Title,
 				Description = issue.Description,
-				ProjectId = issue.ProjectId
+				ProjectId = issue.ProjectId,
+				Type = issue.Type.ToString(),
+				Types = new SelectList(types)
 			};
 
 			return View(model);
@@ -236,7 +253,15 @@ namespace SDC.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
+				var types = Enum.GetNames(typeof(IssueType));
+				model.Types = new SelectList(types);
 				return View(model);
+			}
+
+			IssueType type;
+			if (!Enum.TryParse(model.Type, out type))
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
 
 			var issue = db.Issues.Find(model.Id);
@@ -248,6 +273,7 @@ namespace SDC.Web.Controllers
 
 			issue.Title = model.Title;
 			issue.Description = model.Description;
+			issue.Type = type;
 			db.SaveChanges();
 
 			return RedirectToAction("Details", new {id = issue.Id});

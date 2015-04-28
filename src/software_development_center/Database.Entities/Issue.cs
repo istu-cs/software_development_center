@@ -8,6 +8,7 @@ namespace Database.Entities
 		public string Title { get; set; }
 		public string Description { get; set; }
 		public IssueStatus Status { get; set; }
+		public IssueType Type { get; set; }
 
 		public string AuthorId { get; set; }
 		public virtual User Author { get; set; }

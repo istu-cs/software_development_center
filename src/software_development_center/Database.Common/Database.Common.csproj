@@ -116,6 +116,10 @@
     <Compile Include="Migrations\201504270519114_Add Issue Status.Designer.cs">
       <DependentUpon>201504270519114_Add Issue Status.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201504280558427_Add Issue Type.cs" />
+    <Compile Include="Migrations\201504280558427_Add Issue Type.Designer.cs">
+      <DependentUpon>201504280558427_Add Issue Type.cs</DependentUpon>
+    </Compile>
     <Compile Include="SdcDbContext.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
@@ -160,6 +164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201504270519114_Add Issue Status.resx">
       <DependentUpon>201504270519114_Add Issue Status.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504280558427_Add Issue Type.resx">
+      <DependentUpon>201504280558427_Add Issue Type.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

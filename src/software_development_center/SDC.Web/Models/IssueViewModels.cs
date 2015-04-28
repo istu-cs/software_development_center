@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 using Database.Entities;
 using Database.Entities.Enum;
 
@@ -19,6 +20,7 @@ namespace SDC.Web.Models
 		public long Id { get; set; }
 		public string Title { get; set; }
 		public IssueStatus Status { get; set; }
+		public IssueType Type { get; set; }
 		[DataType(DataType.MultilineText)]
 		public string Description { get; set; }
 		public string AuthorId { get; set; }
@@ -48,6 +50,10 @@ namespace SDC.Web.Models
 		public string Description { get; set; }
 		public long ProjectId { get; set; }
 		public long? ParentIssueId { get; set; }
+
+		[Required]
+		public string Type { get; set; }
+		public IEnumerable<SelectListItem> Types { get; set; }
 	}
 
 	public class EditIssueViewModel
@@ -59,6 +65,10 @@ namespace SDC.Web.Models
 		[DataType(DataType.MultilineText)]
 		public string Description { get; set; }
 		public long ProjectId { get; set; }
+
+		[Required]
+		public string Type { get; set; }
+		public IEnumerable<SelectListItem> Types { get; set; }
 	}
 
 	public class DeleteIssueViewModel
