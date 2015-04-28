@@ -295,8 +295,21 @@ namespace SDC.Web.Controllers
 			var currentUserId = User.Identity.GetUserId();
 			if (issue.AuthorId == currentUserId)
 			{
+				var parentIssue = issue.ParentIssue;
+
+				foreach (var childIssue in issue.ChildIssues)
+				{
+					childIssue.ParentIssueId = null;
+				}
+
 				db.Issues.Remove(issue);
 				db.SaveChanges();
+
+				if (parentIssue != null && parentIssue.ChildIssues.All(x => x.Status == IssueStatus.Closed))
+				{
+					parentIssue.Status = IssueStatus.Opened;
+					db.SaveChanges();
+				}
 			}
 			return RedirectToAction("Index", new {projectId});
 		}
